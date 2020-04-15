@@ -6,18 +6,13 @@ using namespace partition;
 template <typename Label, typename Comp, typename Subgraph>
 class subgraph_writer {
 public:
-  subgraph_writer(Label label, Comp comp, Subgraph subgraph) :
-    label_(label),
-    comp_(comp),
-    subgraph_(subgraph)
-  {};
+  subgraph_writer(Label label, Comp comp, Subgraph subgraph)
+      : label_(label), comp_(comp), subgraph_(subgraph){};
 
   template <typename LabelWriter, typename EdgeWriter>
-  void operator()(std::ostream& out,
-		  graph::Graph& G,
-		  std::map<int, graph::Subgraph>& subgraphs,
-		  LabelWriter label_writer,
-		  EdgeWriter edge_writer) {
+  void operator()(std::ostream &out, graph::Graph &G,
+                  std::map<int, graph::Subgraph> &subgraphs,
+                  LabelWriter label_writer, EdgeWriter edge_writer) {
     write_header(out);
 
     for (auto it = subgraphs.begin(); it != subgraphs.end(); it++) {
@@ -40,16 +35,13 @@ public:
     write_footer(out);
   }
 
-  void write_header(std::ostream& out) {
-    out << "digraph G {" << std::endl;
-  }
+  void write_header(std::ostream &out) { out << "digraph G {" << std::endl; }
 
-  void write_footer(std::ostream& out) {
-    out << "}" << std::endl;
-  }
+  void write_footer(std::ostream &out) { out << "}" << std::endl; }
 
   template <typename LabelWriter>
-  void write_subgraph(std::ostream& out, int id, const graph::Subgraph& vs, LabelWriter& label_writer) {
+  void write_subgraph(std::ostream &out, int id, const graph::Subgraph &vs,
+                      LabelWriter &label_writer) {
     out << "subgraph cluster_" << id << " {" << std::endl;
 
     out << "label = \"subgraph_" << id << "\";" << std::endl;
@@ -76,19 +68,17 @@ protected:
 template <typename Label, typename Comp, typename Subgraph>
 class label_compat_writer {
 public:
-  label_compat_writer(Label label, Comp comp, Subgraph subgraph) :
-    label_(label),
-    comp_(comp),
-    subgraph_(subgraph)
-  {};
-  void operator()(std::ostream& out, const graph::Vertex& u) const {
+  label_compat_writer(Label label, Comp comp, Subgraph subgraph)
+      : label_(label), comp_(comp), subgraph_(subgraph){};
+  void operator()(std::ostream &out, const graph::Vertex &u) const {
     out << "[label=\"" << label_[u];
 
     if (subgraph_[u] > -1) {
       out << ": " << subgraph_[u];
     }
 
-    out << "\"" << " ";
+    out << "\""
+        << " ";
 
     std::string color;
 
@@ -115,17 +105,18 @@ public:
 
     out << "]";
   };
+
 protected:
   Label label_;
   Comp comp_;
   Subgraph subgraph_;
 };
 
-template <typename EType, typename ELabel>
-class edge_type_writer {
+template <typename EType, typename ELabel> class edge_type_writer {
 public:
-  edge_type_writer(EType& etype, ELabel& elabel) : etype_{etype}, elabel_{elabel} {};
-  void operator()(std::ostream& out, const graph::Edge& e) const {
+  edge_type_writer(EType &etype, ELabel &elabel)
+      : etype_{etype}, elabel_{elabel} {};
+  void operator()(std::ostream &out, const graph::Edge &e) const {
     out << "[label=\"" << elabel_[e] << "\" ";
     switch (etype_[e]) {
     case graph::ETypes::I2C:
@@ -139,9 +130,10 @@ public:
       break;
     }
   };
+
 protected:
-  EType& etype_;
-  ELabel& elabel_;
+  EType &etype_;
+  ELabel &elabel_;
 };
 
 #endif // UTILS_HPP

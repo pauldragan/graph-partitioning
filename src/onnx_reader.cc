@@ -1,11 +1,11 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
-#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/graph_utility.hpp>
 
 #include <onnx/onnx-ml.proto3.pb.h>
@@ -21,13 +21,12 @@ graph::Graph ONNXReader::from_bin(std::string path) {
 
   typedef std::pair<int, int> Edge;
 
-  std::fstream modelpb (path,
-			std::ios::in |
-			std::ios::binary);
+  std::fstream modelpb(path, std::ios::in | std::ios::binary);
 
   onnx::ModelProto model;
   if (!model.ParseFromIstream(&modelpb)) {
-    std::cerr << "[ERROR] ONNXReader: failed to parse from stream!" << std::endl;
+    std::cerr << "[ERROR] ONNXReader: failed to parse from stream!"
+              << std::endl;
     return graph::Graph();
   }
 
@@ -39,13 +38,14 @@ graph::Graph ONNXReader::from_bin(std::string path) {
   graph::VertexNameProperty name = boost::get(graph::vertex_name, g);
   graph::VertexTypeProperty ntype = boost::get(graph::vertex_node_type, g);
   graph::VertexCompatProperty compat = boost::get(graph::vertex_compat, g);
-  graph::VertexSubgraphIndexProperty subgraph = boost::get(graph::vertex_subgraph_index, g);
+  graph::VertexSubgraphIndexProperty subgraph =
+      boost::get(graph::vertex_subgraph_index, g);
   graph::EdgeTypeProperty etype = boost::get(graph::edge_type, g);
   graph::EdgeIndexProperty eindex = boost::get(graph::edge_index, g);
   graph::EdgeNameProperty ename = boost::get(graph::edge_name, g);
 
   std::map<std::string, int> output_tensors;
-  std::map<std::string, int> model_output_tensors;  
+  std::map<std::string, int> model_output_tensors;
 
   int i = 0;
   for (auto it = graph.node().begin(); it < graph.node().end(); it++) {
@@ -56,7 +56,7 @@ graph::Graph ONNXReader::from_bin(std::string path) {
   }
 
   std::vector<int> input_nodes;
-  std::vector<int> output_nodes;  
+  std::vector<int> output_nodes;
   for (auto it = graph.input().begin(); it != graph.input().end(); it++) {
     output_tensors[it->name()] = i;
     input_nodes.push_back(i);
@@ -66,7 +66,7 @@ graph::Graph ONNXReader::from_bin(std::string path) {
     model_output_tensors[it->name()] = i;
     output_nodes.push_back(i);
     i++;
-  }  
+  }
 
   std::vector<Edge> edges;
   std::map<int, std::string> names;
@@ -78,11 +78,12 @@ graph::Graph ONNXReader::from_bin(std::string path) {
     std::string node_name("node_" + std::to_string(i));
     names[i] = node_name;
     ops[i] = it->op_type();
-    std::cout << node_name << " [" << i << "] " << ": " << it->op_type();
+    std::cout << node_name << " [" << i << "] "
+              << ": " << it->op_type();
 
     for (auto it2 = it->input().begin(); it2 < it->input().end(); it2++) {
       if (output_tensors.find(*it2) == output_tensors.end()) {
-	continue;
+        continue;
       }
       Edge e(output_tensors[*it2], i);
       edges.push_back(e);
@@ -91,14 +92,14 @@ graph::Graph ONNXReader::from_bin(std::string path) {
     }
     for (auto it2 = it->output().begin(); it2 < it->output().end(); it2++) {
       if (model_output_tensors.find(*it2) == model_output_tensors.end()) {
-	continue;
+        continue;
       }
       std::cout << "found output!!!" << std::endl;
       Edge e(i, model_output_tensors[*it2]);
       edges.push_back(e);
       edge_names[e] = *it2;
       std::cout << "    " << e.first << " -> " << e.second;
-    }    
+    }
     i++;
     std::cout << std::endl;
   }
@@ -115,7 +116,7 @@ graph::Graph ONNXReader::from_bin(std::string path) {
     names[i] = node_name;
     ops[i] = "Output_Placeholder";
     i++;
-  }  
+  }
 
   for (auto it = edges.begin(); it < edges.end(); it++) {
     // Find first
@@ -133,8 +134,8 @@ graph::Graph ONNXReader::from_bin(std::string path) {
     auto e_out = boost::add_edge(n1, n2, g);
     auto e = e_out.first;
 
-    std::cout << "(" << it->first << ", " << it->second << ") "
-	      << e_out.first << " " << e_out.second << std::endl;
+    std::cout << "(" << it->first << ", " << it->second << ") " << e_out.first
+              << " " << e_out.second << std::endl;
 
     boost::put(name, n1, it_first->second);
     boost::put(name, n2, it_second->second);
@@ -152,7 +153,8 @@ graph::Graph ONNXReader::from_bin(std::string path) {
     boost::put(ename, e, edge_names[*it]);
     boost::put(eindex, e, -1);
 
-    std::cout << it->first << " : " << ntype[n1] << " -> " << it->second << " : " << ntype[n2] << std::endl;
+    std::cout << it->first << " : " << ntype[n1] << " -> " << it->second
+              << " : " << ntype[n2] << std::endl;
   }
 
   return g;

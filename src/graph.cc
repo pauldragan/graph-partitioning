@@ -1,7 +1,7 @@
 #include <graph-partitioning/graph.hpp>
 
-#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_traits.hpp>
 #include <boost/graph/graph_utility.hpp>
 
 namespace partition {
@@ -16,5 +16,5 @@ edge_type_t edge_type = boost::edge_type;
 edge_index_t edge_index = boost::edge_index;
 edge_name_t edge_name = boost::edge_name;
 
-} // graph
-} // partition
+} // namespace graph
+} // namespace partition

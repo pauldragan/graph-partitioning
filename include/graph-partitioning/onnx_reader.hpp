@@ -5,17 +5,16 @@
 
 #include <graph-partitioning/graph.hpp>
 
-
 namespace partition {
 namespace readers {
 
-  class ONNXReader {
-  public:
-    static graph::Graph from_bin(std::string path);
+class ONNXReader {
+public:
+  static graph::Graph from_bin(std::string path);
 
-  }; // ONNXReader
+}; // ONNXReader
 
-} // readers
-} // partition
+} // namespace readers
+} // namespace partition
 
 #endif // ONNX_READER_HPP
