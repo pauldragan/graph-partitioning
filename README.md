@@ -1,2 +1,1 @@
-# graph-partiotioning
-Automatic partitioning of computational graphs
+Automatic partitioning of computational graphs.
