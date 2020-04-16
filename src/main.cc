@@ -18,7 +18,7 @@ using namespace partition;
 
 int main(int argc, char *argv[]) {
   auto g = readers::ONNXReader::from_bin(
-      "../onnx_models/resnet50/model_shapes.onnx");
+      "../test-models/onnx/resnet50/model_shapes.onnx");
   graph::VertexTypeProperty ntype = boost::get(graph::vertex_node_type, g);
   // graph::VertexNameProperty name = boost::get(graph::vertex_name, g);
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
       label_compat_writer(ntype_summary, compat_summary, subgraph_summary),
       edge_type_writer(etype_summary, ename_summary));
 
-  writers::ONNXWriter::to_bin("../onnx_models/resnet50/model_shapes.onnx",
+  writers::ONNXWriter::to_bin("../test-models/onnx/resnet50/model_shapes.onnx",
                               "./out_pbs", g_mod, g_mod_subgraphs);
 
   std::map<graph::Edge, std::string> inputs_map;
