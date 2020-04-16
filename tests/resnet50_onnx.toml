@@ -1,0 +1,9 @@
+model_name = "resnet50_onnx"
+output_dir = "./out_resnet50_onnx"
+model_path = "test-models/onnx/resnet50/model_shapes.onnx"
+model_type = "onnx"
+unsupported_ops = ["Sum"]
+data_ops = ["Input_Placeholder", "Output_Placeholder"]
+identity_ops = []
+test_data_input = "test-models/onnx/resnet50/test_data_set_0/input_0.pb"
+test_data_output = "test-models/onnx/resnet50/test_data_set_0/output_0.pb"

@@ -1,7 +1,9 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-using namespace partition;
+#include <graph-partitioning/graph.hpp>
+
+namespace partition::utils {
 
 template <typename Label, typename Comp, typename Subgraph>
 class subgraph_writer {
@@ -135,5 +137,19 @@ protected:
   EType &etype_;
   ELabel &elabel_;
 };
+
+  struct Config {
+    std::string model_path;
+    std::string model_name;
+    std::string output_dir;
+    std::string model_type;
+    std::vector<std::string> unsupported_ops;
+    std::vector<std::string> data_ops;
+    std::vector<std::string> identity_ops;
+  };
+
+  Config parse_config_file(std::string path);
+
+} // namespace partition::utils
 
 #endif // UTILS_HPP

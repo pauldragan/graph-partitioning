@@ -15,10 +15,19 @@
 #include <graph-partitioning/utils.hpp>
 
 using namespace partition;
+using namespace partition::utils;
 
 int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cout << "[ERROR] Please pass the path to the .toml configuration file." << std::endl;
+    return -1;
+  }
+  std::string config_path(argv[1]);
+
+  Config config = parse_config_file(config_path);
+
   auto g = readers::ONNXReader::from_bin(
-      "../test-models/onnx/resnet50/model_shapes.onnx");
+      config.model_path);
   graph::VertexTypeProperty ntype = boost::get(graph::vertex_node_type, g);
   // graph::VertexNameProperty name = boost::get(graph::vertex_name, g);
 
@@ -30,10 +39,9 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  std::unordered_set<std::string> rm_ops = {"Sum"};
-  std::unordered_set<std::string> data_ops = {"Input_Placeholder",
-                                              "Output_Placeholder"};
-  std::unordered_set<std::string> id_ops = {};
+  std::unordered_set<std::string> rm_ops{config.unsupported_ops.begin(), config.unsupported_ops.end()};
+  std::unordered_set<std::string> data_ops{config.data_ops.begin(), config.data_ops.end()};
+  std::unordered_set<std::string> id_ops{config.identity_ops.begin(), config.identity_ops.end()};
   auto deleter = algorithms::RemoveUnsupportedNodes(rm_ops, data_ops, id_ops);
   graph::Graph g_mod(g);
   std::map<int, graph::Subgraph> g_mod_subgraphs;
@@ -50,7 +58,7 @@ int main(int argc, char *argv[]) {
 
   auto subwriter = subgraph_writer(ntype_mod, compat_mod, subgraph_mod);
 
-  std::fstream out_fp("./out_graph.dot", std::ios::out);
+  std::fstream out_fp(config.output_dir + "/" + config.model_name + ".dot", std::ios::out);
   subwriter(out_fp, g_mod, g_mod_subgraphs,
             label_compat_writer(ntype_mod, compat_mod, subgraph_mod),
             edge_type_writer(etype_mod, ename_mod));
@@ -69,14 +77,14 @@ int main(int argc, char *argv[]) {
       boost::get(graph::edge_name, g_summary);
   graph::VertexSubgraphIndexProperty subgraph_summary =
       boost::get(graph::vertex_subgraph_index, g_summary);
-  std::fstream out_fp_summary("./out_graph_summary.dot", std::ios::out);
+  std::fstream out_fp_summary(config.output_dir + "/" + config.model_name + "_summary.dot", std::ios::out);
   boost::write_graphviz(
       out_fp_summary, g_summary,
       label_compat_writer(ntype_summary, compat_summary, subgraph_summary),
       edge_type_writer(etype_summary, ename_summary));
 
-  writers::ONNXWriter::to_bin("../test-models/onnx/resnet50/model_shapes.onnx",
-                              "./out_pbs", g_mod, g_mod_subgraphs);
+  writers::ONNXWriter::to_bin(config.model_path,
+                              config.output_dir, g_mod, g_mod_subgraphs);
 
   std::map<graph::Edge, std::string> inputs_map;
   std::map<graph::Edge, std::string> outputs_map;
@@ -96,7 +104,7 @@ int main(int argc, char *argv[]) {
   boost::associative_property_map<std::map<graph::Edge, std::string>>
       outputs_prop_map(outputs_map);
 
-  std::fstream out_summary_graphml("./out_graph_summary.xml", std::ios::out);
+  std::fstream out_summary_graphml(config.output_dir + "/" + config.model_name + "_summary.xml", std::ios::out);
   boost::dynamic_properties dp;
   dp.property("subgraph", subgraph_summary);
   dp.property("input", inputs_prop_map);
