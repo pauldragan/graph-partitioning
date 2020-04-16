@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(graph_partitioning_proj)
 
-add_subdirectory(proto-out)
+add_subdirectory(lib/protos)
 
 include_directories(include/)
 
