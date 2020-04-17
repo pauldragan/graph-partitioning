@@ -138,17 +138,17 @@ protected:
   ELabel &elabel_;
 };
 
-  struct Config {
-    std::string model_path;
-    std::string model_name;
-    std::string output_dir;
-    std::string model_type;
-    std::vector<std::string> unsupported_ops;
-    std::vector<std::string> data_ops;
-    std::vector<std::string> identity_ops;
-  };
+struct Config {
+  std::string model_path;
+  std::string model_name;
+  std::string output_dir;
+  std::string model_type;
+  std::vector<std::string> unsupported_ops;
+  std::vector<std::string> data_ops;
+  std::vector<std::string> identity_ops;
+};
 
-  Config parse_config_file(std::string path);
+Config parse_config_file(std::string path);
 
 } // namespace partition::utils
 
