@@ -93,7 +93,9 @@ void RemoveUnsupportedNodes::operator()(
 
   // Create subgraph structs
   for (auto it = subgraph_map.begin(); it != subgraph_map.end(); it++) {
-    it->second.nodes = std::move(subgraph_nodes[it->first]);
+    if (subgraph_nodes[it->first].size() > 0) {
+      it->second.nodes = std::move(subgraph_nodes[it->first]);
+    }
   }
 
   assign_edges_subgraph_visitor assign_edges(subgraph_map, compat, subgraph);

@@ -94,7 +94,6 @@ graph::Graph ONNXReader::from_bin(std::string path) {
       if (model_output_tensors.find(*it2) == model_output_tensors.end()) {
         continue;
       }
-      std::cout << "found output!!!" << std::endl;
       Edge e(i, model_output_tensors[*it2]);
       edges.push_back(e);
       edge_names[e] = *it2;

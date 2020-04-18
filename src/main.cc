@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   graph::VertexTypeProperty ntype = boost::get(graph::vertex_node_type, g);
   // graph::VertexNameProperty name = boost::get(graph::vertex_name, g);
 
-  std::fstream orig_out_fp("./out_graph_orig.dot", std::ios::out);
+  std::fstream orig_out_fp(config.output_dir + "/" + config.model_name + "_orig.dot", std::ios::out);
   boost::write_graphviz(orig_out_fp, g, boost::make_label_writer(ntype));
 
   if (algorithms::has_cycles(g)) {
