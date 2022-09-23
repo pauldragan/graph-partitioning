@@ -3,7 +3,7 @@ networkx==2.4
 numpy==1.18.2
 onnx==1.7.0
 onnxruntime==1.2.0
-protobuf==3.11.3
+protobuf==3.18.3
 six==1.14.0
 toml==0.10.0
 typing-extensions==3.7.4.2
